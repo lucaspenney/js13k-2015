@@ -9,9 +9,7 @@ function Stars(screen) {
     this.stars = [];
     this.layers = [];
     var _this = this;
-    this.screen.eventManager.addEventListener('focus', function() {
-        _this.init(screen);
-    });
+    _this.init(screen);
 }
 
 Stars.prototype.init = function(screen) {

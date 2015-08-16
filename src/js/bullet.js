@@ -7,8 +7,8 @@ var Ship = require('./ship');
 var Vector = require('./vector');
 
 var Bullet = Entity.extend({
-    init: function(game, id, x, y) {
-        this._super(game, id, x, y);
+    init: function(game, x, y) {
+        this._super(game, x, y);
         this.sprite = new Sprite(this, "img/bullet.png");
         this.flashSprite = new Sprite(this, "img/muzzleflash.png");
         this.flashSprite.alpha = 0.5;

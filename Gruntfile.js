@@ -6,20 +6,25 @@ module.exports = function(grunt) {
 		watch: {
 			scripts: {
 				files: ['src/js/**/*.js'],
-				tasks: ['concat:app'],
+				tasks: ['browserify', 'uglify:development'],
 			},
 			css: {
 				files: 'src/css/**/*.less',
 				tasks: ['less:development']
 			},
 		},
+		browserify: {
+			options: {},
+			'src/compiled.js': ['src/js/client.js']
+		},
 		uglify: {
 			development: {
 				options: {
 					mangle: false,
+					compress: false,
 				},
 				files: {
-					'build/compiled.js': ['src/js/**/*.js']
+					'build/compiled.js': ['src/compiled.js']
 				},
 			},
 			compressed: {
@@ -30,7 +35,7 @@ module.exports = function(grunt) {
 					}
 				},
 				files: {
-					'build/compiled.js': ['src/js/**/*.js']
+					'build/compiled.js': ['src/compiled.js']
 				},
 			}
 		},
@@ -49,12 +54,8 @@ module.exports = function(grunt) {
 		},
 		htmlmin: {
 			development: {
-				options: {
-					removeComments: false,
-					collapseWhitespace: false,
-				},
 				files: {
-					'build/index.html': 'src/*.html'
+					'build/index.html': 'src/index.html'
 				}
 			},
 			compressed: {
@@ -63,8 +64,24 @@ module.exports = function(grunt) {
 					collapseWhitespace: true,
 				},
 				files: {
-					'build/index.html': 'src/*.html'
+					'build/index.html': 'src/index.html'
 				}
+			}
+		},
+		copy: {
+			development: {
+				files: [{
+					expand: false,
+					src: ['src/img'],
+					dest: 'build/img',
+				}]
+			},
+			compressed: {
+				files: [{
+					expand: false,
+					src: ['src/img'],
+					dest: 'build/img',
+				}]
 			}
 		},
 		compress: {
@@ -81,14 +98,8 @@ module.exports = function(grunt) {
 					dest: './'
 				}]
 			}
-		}
+		},
 	});
-
-	grunt.loadNpmTasks('grunt-contrib-watch');
-	grunt.loadNpmTasks('grunt-contrib-uglify');
-	grunt.loadNpmTasks('grunt-contrib-less');
-	grunt.loadNpmTasks('grunt-contrib-htmlmin');
-	grunt.loadNpmTasks('grunt-contrib-compress');
 
 	var fs = require('fs');
 	grunt.registerTask('sizecheck', function() {
@@ -103,8 +114,18 @@ module.exports = function(grunt) {
 		});
 	});
 
+	grunt.loadNpmTasks('grunt-browserify');
+	grunt.loadNpmTasks('grunt-contrib-watch');
+	grunt.loadNpmTasks('grunt-contrib-uglify');
+	grunt.loadNpmTasks('grunt-contrib-copy');
+	grunt.loadNpmTasks('grunt-contrib-less');
+	grunt.loadNpmTasks('grunt-contrib-htmlmin');
+	grunt.loadNpmTasks('grunt-contrib-compress');
+	grunt.loadNpmTasks('grunt-file-info');
+
+
 	grunt.registerTask('default', ['watch']);
-	grunt.registerTask('build', ['uglify:development', 'less:development', 'htmlmin:development']);
-	grunt.registerTask('build-compress', ['uglify:compressed', 'less:compressed', 'htmlmin:compressed', 'compress:main', 'sizecheck']);
+	grunt.registerTask('build', ['browserify', 'uglify:development', 'less:development', 'htmlmin:development', 'copy:development']);
+	grunt.registerTask('build-compress', ['browserify', 'uglify:compressed', 'less:compressed', 'htmlmin:compressed', 'copy:compressed', 'compress:main', 'sizecheck']);
 
 };

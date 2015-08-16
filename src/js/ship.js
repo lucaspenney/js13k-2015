@@ -11,14 +11,13 @@ var Angle = require('./angle');
 var Planet = require('./planet');
 
 var Ship = Entity.extend({
-	init: function(game, id, x, y) {
+	init: function(game, x, y) {
 		this.width = 32;
 		this.height = 42;
-		this._super(game, id, x, y);
+		this._super(game, x, y);
 		this.game = game;
 		this.rotation = new Angle();
-		this.input = {};
-		this.sprite = new Sprite(this, "img/ship7.png");
+		this.sprite = new Sprite(this, "img/ship1.png");
 		this.physics = new Physics(this.game, this, new BoundingCircle(this.game, this, 20));
 		this.physics.collidesWith = ['Asteroid', 'Planet', 'Ship'];
 		this.physics.mass = 10;
@@ -27,7 +26,10 @@ var Ship = Entity.extend({
 		this.trail = new Trail(this.game, this);
 		this.turnThrust = 0.4;
 		this.mainThrust = 0.20;
-		this.engine = {};
+		this.engine = {
+			fuel: 100,
+			useFuel: function() {}
+		};
 		this.weapon = new Weapon(this);
 		this.landed = false;
 		this.health = 100;
@@ -54,28 +56,28 @@ var Ship = Entity.extend({
 		});
 		this.lastFireTime = 0;
 	},
-	update: function() {
+	update: function(input) {
 		this._super();
 		//Scale thrust down towards 0 as speed approaches maxvelocity
 		this.mainThrust = ((1 - (this.physics.vel.getAbsoluteMaxValue() / this.physics.maxVelocity)) * 0.2);
 		this.engine.mainOn = false;
-		if (this.input.up) {
-			if (this.engine.useFuel(2)) {
+		if (input.up) {
+			if (this.engine.useFuel(2) || true) {
 				this.engine.mainOn = true;
 				var x = Math.cos(this.rotation.clone().subtract(90).toRadians()) * this.mainThrust;
 				var y = Math.sin(this.rotation.clone().subtract(90).toRadians()) * this.mainThrust;
 				this.physics.addAcceleration(x, y, 0);
 			}
 		}
-		if (this.input.left) { //Left Arrow
+		if (input.left) { //Left Arrow
 			this.engine.useFuel();
 			this.physics.addAcceleration(0, 0, this.turnThrust * -1);
 		}
-		if (this.input.right) { //Right Arrow
+		if (input.right) { //Right Arrow
 			this.engine.useFuel();
 			this.physics.addAcceleration(0, 0, this.turnThrust);
 		}
-		if (this.input.fire) {
+		if (input.fire) {
 			this.weapon.fire();
 		}
 
@@ -87,12 +89,9 @@ var Ship = Entity.extend({
 	},
 	render: function(ctx, screen, audio) {
 		//this.trail.render(ctx, screen);
-		this.engine.render(ctx, screen, audio);
+		//this.engine.render(ctx, screen, audio);
 		this._super(ctx, screen);
 		//this.physics.bounds.render(ctx, screen);
-	},
-	setInput: function(input) {
-		this.input = input;
 	},
 	takeDamage: function(damage) {
 		this.health -= damage;

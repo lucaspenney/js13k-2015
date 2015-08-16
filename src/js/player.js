@@ -8,11 +8,12 @@ var BoundingCircle = require('./boundingcircle');
 var Vector = require('./vector');
 var Angle = require('./angle');
 var Planet = require('./planet');
+var Ship = require('./ship');
 
 var Player = Entity.extend({
-	init: function(game, id, x, y) {
+	init: function(game, x, y) {
 		this.classname = "Player";
-		this._super(game, id, x, y);
+		this._super(game, x, y);
 		this.game = game;
 		this.input = {};
 		this.client = false;
@@ -22,22 +23,16 @@ var Player = Entity.extend({
 			pos: {}
 		}];
 		this.layer = 999;
+		this.ship = new Ship(this.game, x, y);
 	},
-	update: function() {
+	update: function(input) {
 		this._super();
 		if (this.ship) {
-			this.pos = this.ship.pos.clone();;
-			this.ship.setInput(this.input);
+			this.pos = this.ship.pos.clone();
 		}
 	},
 	render: function(ctx, screen) {
-
-	},
-	setInput: function(input) {
-		this.input = input;
-		if (this.ship) {
-			this.ship.setInput(this.input);
-		}
+		screen.setFocusedEntity(this.ship);
 	},
 	getShip: function() {
 		if (this.ship) return this.ship;

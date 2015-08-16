@@ -50,14 +50,13 @@ var Physics = Class.extend({
     this.addVelocity(this.accel.x, this.accel.y, this.ra);
 
 
-
     if (!this.static) {
       //Do collision and movement
       var vel = this.vel.clone();
       for (var k = 1; k <= 3; k++) {
         var collision = false;
         var colliding = null;
-        var v = vel.clone().scale(this.timeScale);
+        var v = vel.clone();
         v.scale(k / 3);
         for (var i = 0; i < nearbys.length; i++) {
           if (this.collidesWith.indexOf(nearbys[i].toJSON().classname) === -1) continue;
@@ -117,8 +116,8 @@ var Physics = Class.extend({
     }
     */
 
-    this.eventManager.dispatch('post-collide', this.entity, entity);
-    entity.physics.eventManager.dispatch('collision', entity.physics, this.entity);
+    //this.eventManager.dispatch('post-collide', this.entity, entity);
+    //entity.physics.eventManager.dispatch('collision', entity.physics, this.entity);
   },
   addVelocity: function(x, y, r) {
     x = x || 0;

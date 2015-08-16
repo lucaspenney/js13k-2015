@@ -10,17 +10,18 @@ var Game = Class.extend({
     this.debugMode = false;
     this.lastTick = Date.now();
     this.tick = Date.now();
+    this.tickRate = 60;
     this.eventManager = new EventManager();
+    this.entities.push(new Player(this, 0, 0));
   },
-  update: function(tickRate) {
+  update: function(input) {
     this.tick = Date.now();
     for (var i = this.entities.length - 1; i >= 0; i--) {
-      if (this.entities[i].active)
-        this.entities[i].update();
+      this.entities[i].update(input);
     }
     this.lastTick = this.tick;
   },
-  render: function(ctx, screen, audio) {
+  render: function(ctx, screen) {
     if (!ctx || !screen) return;
     ctx.fillStyle = "#000000";
     ctx.clearRect(0, 0, screen.width, screen.height);
@@ -37,15 +38,11 @@ var Game = Class.extend({
       return 0;
     });
     for (var i = this.entities.length - 1; i >= 0; i--) {
-      this.entities[i].render(ctx, screen, audio);
+      this.entities[i].render(ctx, screen);
     }
   },
   on: function(event, func) {
     this.eventManager.addEventListener(event, func);
-  },
-  newEntityId: function() {
-    this.entityId++;
-    return this.entityId;
   },
 });
 module.exports = Game;

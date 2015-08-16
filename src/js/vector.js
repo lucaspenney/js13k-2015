@@ -3,7 +3,6 @@
  * @author Dave Taylor <dave.taylor@pogokid.com>
  */
 var Vector = function(x, y) {
-  this.listeners = [];
   this.set(x, y);
 };
 Vector.scalar = function(s) {

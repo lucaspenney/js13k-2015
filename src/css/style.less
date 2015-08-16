@@ -1,0 +1,30 @@
+
+body, html {
+	background-color:#000;
+	padding:0;
+	margin:0;
+    overflow:hidden;
+}
+
+#back,#game {
+    width:800px;
+    height:600px;
+    position:absolute;
+    left:50%;
+    margin-left:-400px;
+}
+#back {
+	padding:10px;
+	margin-left:-410px;
+    background-image: url('img/back.jpg');
+    background-size: contain;
+    z-index:0;
+    -webkit-filter: blur(4px);
+}
+#game {
+	z-index:99;
+    /* original image source: http://www.eso.org/public/archives/images/screen/eso1228d.jpg */;
+}
+canvas {
+    image-rendering: crisp-edges;
+}

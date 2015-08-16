@@ -11,9 +11,9 @@ var UI = require('./ui');
 var Game = require('./game');
 
 var Client = Class.extend({
-  init: function(stage) {
+  init: function() {
     this.game = new Game();
-    this.stage = document.getElementsByTagName("canvas");
+    this.stage = document.getElementsByTagName("canvas")[0];
     this.ctx = this.stage.getContext('2d');
     this.fpsManager = new FPSManager(this);
     this.input = new InputManager(this);
@@ -21,7 +21,7 @@ var Client = Class.extend({
     this.ui = new UI(this);
     this.debug = true;
     this.frameTime = 0;
-    this.tickRate = 30;
+    this.tickRate = 60;
     this.lastUpdate = 0;
     this.lastRender = 0;
     this.fps = 0;
@@ -34,8 +34,8 @@ var Client = Class.extend({
   },
   tick: function() {
     var _this = this;
-    if (Date.now() - this.lastRender > (1000 / this.tickRate)) {
-      _this.game.update();
+    if (Date.now() - this.lastUpdate > (1000 / this.tickRate)) {
+      _this.game.update(this.input.getInput());
       _this.render();
       _this.lastUpdate = Date.now();
     }
@@ -50,7 +50,7 @@ var Client = Class.extend({
       this.fps = 0;
     }
     var curTime = Date.now();
-    this.game.render(this.ctx, this.screen, this.audio);
+    this.game.render(this.ctx, this.screen);
     this.ui.render(this.ctx, this.screen);
     this.debugOutput();
     this.fps++;
