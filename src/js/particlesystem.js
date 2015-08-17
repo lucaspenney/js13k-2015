@@ -3,36 +3,63 @@ var Vector = require('./vector');
 var Particle = require('./particle');
 
 var ParticleSystem = Class.extend({
-	init: function(game, x, y, type) {
+	init: function(game, x, y, opts) {
 		this.game = game;
 		this.pos = new Vector(x, y);
 		this.particles = [];
-		this.type = type;
 		this.active = false;
 		this.pid = 0;
 		this.rotationalOffset = 0;
-		this.opts = this.particleTypes[type];
+		this.opts = {
+			amount: 500,
+			rate: 50,
+		};
+		for (var prop in opts) {
+			this.opts[prop] = opts[prop];
+		}
+		this.xOffset = 0;
+		this.yOffset = 0;
 		this.update();
 		this.update();
+	},
+	getParentPos: function() {
+		//Get the vector for the parent attachment point
+		var tx = -18;
+		var ty = 0;
+		var angle = this.parent.rotation.clone().subtract(90).toRadians();
+		var x = (tx * Math.cos(angle)) - (ty * Math.sin(angle));
+		var y = (tx * Math.sin(angle)) - (ty * Math.cos(angle));
+		x += this.parent.pos.x;
+		y += this.parent.pos.y;
+		return new Vector(x, y);
 	},
 	update: function() {
 		if (!this.active) return;
 		if (this.parent) {
 			this.pos = this.parent.pos.clone();
-			var x = this.xOffset + Math.cos(this.parent.rotation.clone().add(90).toRadians()) * this.rotationalOffset;
-			var y = this.yOffset + Math.sin(this.parent.rotation.clone().add(90).toRadians()) * this.rotationalOffset;
-			this.pos.x += x;
-			this.pos.y += y;
 		}
 
 		if (this.particles.length >= this.opts.amount) {
-			for (var i = 0; i < this.opts.refreshAmount; i++) {
+			for (var i = 0; i < this.opts.rate; i++) {
+				var target = this.getParentPos().add(this.parent.physics.vel.clone().scale(2));
+				var diff = target.clone().subtract(this.getParentPos());
+				var p = i / this.opts.rate;
+				var pos = this.getParentPos().clone();
+				pos.x += (diff.x * p);
+				pos.y += (diff.y * p);
 				this.particles.shift();
-				this.createParticle();
+
+				this.createParticle(pos.x, pos.y);
 			}
 		} else {
 			for (var i = 0; i < this.opts.rate; i++) {
-				this.createParticle();
+				var target = this.getParentPos().add(this.parent.physics.vel.clone().scale(2));
+				var diff = target.clone().subtract(this.getParentPos());
+				var p = i / this.opts.rate;
+				var pos = this.getParentPos().clone();
+				pos.x += (diff.x * p);
+				pos.y += (diff.y * p);
+				this.createParticle(pos.x, pos.y);
 			}
 		}
 	},
@@ -42,30 +69,19 @@ var ParticleSystem = Class.extend({
 		this.yOffset = yOffset;
 		this.rotationalOffset = rOffset;
 	},
-	createParticle: function() {
+	createParticle: function(x, y) {
+		x = x || this.pos.x;
+		y = y || this.pos.y;
 		if (this.parent) {
-			var pos = this.pos.clone();
-			pos.add(this.parent.physics.vel.clone().scale(-5 * (Math.random())));
-			var x = this.xOffset + Math.cos(this.parent.rotation.clone().add(90).toRadians()) * this.rotationalOffset;
-			var y = this.yOffset + Math.sin(this.parent.rotation.clone().add(90).toRadians()) * this.rotationalOffset;
-			var vel = new Vector(x, y).scale(0.075);
-			var p = _.merge({}, {
-				vel: vel
-			}, this.opts);
-
-			this.particles.push(new Particle(this.game, pos.x, pos.y, p));
-		} else {
-			var vel = new Vector((Math.random() - 0.5) * 10, (Math.random() - 0.5) * 3);
-			var pos = this.pos.clone();
-			var p = _.merge({
-				vel: vel
-			}, this.opts);
-			this.particles.push(new Particle(this.game, this.pos.x, this.pos.y, p));
+			var vel = this.parent.physics.vel.clone().scale(0.95);
+			vel.x = (Math.random() - 0.5) * 3;
+			vel.y = (Math.random() - 0.5) * 3;
+			this.opts.vel = vel;
+			this.particles.push(new Particle(this.game, x, y, this.opts));
 		}
-		this.pid++;
 	},
 	render: function(ctx, screen) {
-		this.update();
+
 		for (var i = 0; i < this.particles.length; i++) {
 			this.particles[i].render(ctx, screen);
 			this.particles[i].update();

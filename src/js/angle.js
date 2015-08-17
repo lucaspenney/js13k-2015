@@ -50,6 +50,11 @@ Angle.prototype = {
   toDegrees: function(ra) {
     return this.set(radToDeg(ra));
   },
+  inverse: function() {
+    this.degrees = 360 - this.degrees;
+    this.makeValid();
+    return this;
+  }
 };
 
 function degToRad(angle) {

@@ -23,13 +23,27 @@ var Ship = Entity.extend({
 		this.physics.mass = 10;
 		this.physics.maxVelocity = 16;
 		this.layer = 100;
-		this.trail = new Trail(this.game, this);
+		this.trail = new Trail(this.game, this, 10, new Vector(-10, 10));
+		this.trail2 = new Trail(this.game, this, 10, new Vector(-10, -10));
 		this.turnThrust = 0.4;
 		this.mainThrust = 0.20;
 		this.engine = {
 			fuel: 100,
 			useFuel: function() {}
 		};
+		this.engineParticles = new ParticleSystem(this.game, this.x, this.y, {
+			r: 70,
+			g: 70,
+			b: 70,
+			a: 1,
+			step: function() {
+				this.a *= 0.8;
+				this.r += 5;
+				this.g += 5;
+				this.b += 5;
+			},
+		});
+		this.engineParticles.setParent(this);
 		this.weapon = new Weapon(this);
 		this.landed = false;
 		this.health = 100;
@@ -58,12 +72,14 @@ var Ship = Entity.extend({
 	},
 	update: function(input) {
 		this._super();
+		this.engineParticles.update();
 		//Scale thrust down towards 0 as speed approaches maxvelocity
-		this.mainThrust = ((1 - (this.physics.vel.getAbsoluteMaxValue() / this.physics.maxVelocity)) * 0.2);
+		this.mainThrust = 0.2;
 		this.engine.mainOn = false;
+		this.engineParticles.turnOff();
 		if (input.up) {
 			if (this.engine.useFuel(2) || true) {
-				this.engine.mainOn = true;
+				this.engineParticles.turnOn();
 				var x = Math.cos(this.rotation.clone().subtract(90).toRadians()) * this.mainThrust;
 				var y = Math.sin(this.rotation.clone().subtract(90).toRadians()) * this.mainThrust;
 				this.physics.addAcceleration(x, y, 0);
@@ -89,7 +105,8 @@ var Ship = Entity.extend({
 	},
 	render: function(ctx, screen, audio) {
 		//this.trail.render(ctx, screen);
-		//this.engine.render(ctx, screen, audio);
+		//this.trail2.render(ctx, screen);
+		this.engineParticles.render(ctx, screen);
 		this._super(ctx, screen);
 		//this.physics.bounds.render(ctx, screen);
 	},
