@@ -2,6 +2,7 @@ var Class = require('./class');
 var Player = require('./player');
 var Stars = require('./stars');
 var EventManager = require('./eventmanager');
+var Planet = require('./planet');
 
 var Game = Class.extend({
   entityId: 0,
@@ -12,7 +13,11 @@ var Game = Class.extend({
     this.tick = Date.now();
     this.tickRate = 60;
     this.eventManager = new EventManager();
-    this.entities.push(new Player(this, 0, 0));
+    this.entities.push(new Player(this, -500, -50));
+    for (var i = 0; i < 1; i++) {
+      this.entities.push(new Planet(this, i * 700, i * 700));
+    }
+
   },
   update: function(input) {
     this.tick = Date.now();

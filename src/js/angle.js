@@ -47,6 +47,10 @@ Angle.prototype = {
   toRadians: function() {
     return degToRad(this.degrees);
   },
+  fromRadians: function(a) {
+    this.degrees = radToDeg(a);
+    return this;
+  },
   toDegrees: function(ra) {
     return this.set(radToDeg(ra));
   },

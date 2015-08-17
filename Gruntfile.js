@@ -47,7 +47,7 @@ module.exports = function(grunt) {
 			},
 			compressed: {
 				files: {
-					"src/css/**/*.css": "build/style.css"
+					"build/style.css": "src/css/**/*.less"
 				},
 				compress: true,
 			}
@@ -121,7 +121,6 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-contrib-less');
 	grunt.loadNpmTasks('grunt-contrib-htmlmin');
 	grunt.loadNpmTasks('grunt-contrib-compress');
-	grunt.loadNpmTasks('grunt-file-info');
 
 
 	grunt.registerTask('default', ['watch']);

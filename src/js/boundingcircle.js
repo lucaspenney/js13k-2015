@@ -68,5 +68,12 @@ var BoundingCircle = Class.extend({
 		}
 		return false;
 	},
+	render: function(ctx, screen) {
+		ctx.strokeStyle = "#FFF";
+		ctx.beginPath();
+		ctx.arc(this.pos.x - screen.xOffset, this.pos.y - screen.yOffset, this.radius, 0, Math.PI * 2, true);
+		ctx.closePath();
+		ctx.stroke();
+	}
 });
 module.exports = BoundingCircle;

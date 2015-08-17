@@ -19,7 +19,11 @@ var Ship = Entity.extend({
 		this.rotation = new Angle();
 		this.sprite = new Sprite(this, "img/ship1.png");
 		this.physics = new Physics(this.game, this, new BoundingCircle(this.game, this, 20));
-		this.physics.collidesWith = ['Asteroid', 'Planet', 'Ship'];
+		this.physics.collidesWith = function(e) {
+			if (e instanceof Planet) {
+				return true;
+			}
+		};
 		this.physics.mass = 10;
 		this.physics.maxVelocity = 16;
 		this.layer = 100;
@@ -52,11 +56,10 @@ var Ship = Entity.extend({
 			if (entity instanceof Planet) {
 				var x = this.pos.x - entity.pos.x;
 				var y = this.pos.y - entity.pos.y;
-				var angle = new Angle().fromRadians(Math.atan2(y, x));
+				var angle = (new Angle()).fromRadians(Math.atan2(y, x));
 				var difference = this.rotation.clone().subtractAngle(angle);
 				if (this.physics.vel.absoluteGreaterThan(2) || (difference.degrees < 55 || difference.degrees > 125)) {
 					if (this.owner) this.owner.requestRespawn();
-					this.game.entityFactory.create('Explosion', this.game, this.pos.x, this.pos.y);
 					this.destroy();
 				} else {
 					this.rotation.set(angle.degrees + 90);
@@ -98,7 +101,6 @@ var Ship = Entity.extend({
 		}
 
 		if (this.landed) {
-			this.engine.addFuel(3);
 			this.landed = false;
 		}
 		this.physics.update();
@@ -108,7 +110,7 @@ var Ship = Entity.extend({
 		//this.trail2.render(ctx, screen);
 		this.engineParticles.render(ctx, screen);
 		this._super(ctx, screen);
-		//this.physics.bounds.render(ctx, screen);
+		this.physics.bounds.render(ctx, screen);
 	},
 	takeDamage: function(damage) {
 		this.health -= damage;

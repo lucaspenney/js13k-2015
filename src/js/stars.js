@@ -90,6 +90,7 @@ Stars.prototype.drawStar = function(ctx, cx, cy, spikes, outerRadius, innerRadiu
     var y = cy;
     var step = Math.PI / spikes;
 
+    ctx.fillStyle = "#FFF";
     ctx.beginPath();
     ctx.moveTo(cx, cy - outerRadius)
     for (i = 0; i < spikes; i++) {

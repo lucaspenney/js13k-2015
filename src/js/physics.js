@@ -15,6 +15,7 @@ var Physics = Class.extend({
     this.mass = 100;
     this.bounds = bounds;
     this.collidesWith = [];
+    this.hasCollided = [];
     this.static = false;
     this.timeScale = 1;
     this.eventManager = new EventManager();
@@ -30,8 +31,7 @@ var Physics = Class.extend({
     for (var i = 0; i < this.game.entities.length; i++) {
       var dist = this.game.entities[i].pos.distance(this.entity.pos);
       if (dist < 1600 && this.game.entities[i].physics !== undefined && this.game.entities[i] !== this.entity) {
-        if (dist < 400)
-          nearbys.push(this.game.entities[i]); //Range for collisions is 400, gravity is 1600
+        nearbys.push(this.game.entities[i]); //Range for collisions and gravity is 1600
         var entity = this.game.entities[i];
         //Add gravity to this from the entity in loop
         if (entity.physics.mass > 0 && this.mass > 0 && this.entity.pos.distance(entity.pos) > 10) {
@@ -59,7 +59,7 @@ var Physics = Class.extend({
         var v = vel.clone();
         v.scale(k / 3);
         for (var i = 0; i < nearbys.length; i++) {
-          if (this.collidesWith.indexOf(nearbys[i].toJSON().classname) === -1) continue;
+          if (!this.collidesWith(nearbys[i])) continue;
           colliding = nearbys[i];
           collision = this.bounds.wouldCollide(v, nearbys[i]);
           if (collision) break;
@@ -85,20 +85,43 @@ var Physics = Class.extend({
     //Reset acceleration as it's now been applied to the current velocity
     this.accel = new Vector(0, 0);
     this.ra = 0;
+    this.hasCollided = [];
   },
   collide: function(entity, collision) {
-    if (this.collidesWith.indexOf(entity.toJSON().classname) === -1) {
+    if (!this.collidesWith(entity)) {
       return false;
     }
+    if (this.hasCollided.indexOf(entity) !== -1) return;
     if (!entity) return;
     var e = entity.physics;
     if (this.eventManager.dispatch('pre-collide', this.entity, entity).indexOf(false) !== -1) return false;
 
+    var myVel = new Vector(0, 0);
+    var theirVel = new Vector(0, 0);
+    myVel.x = (this.vel.x * (this.bounds.radius - e.bounds.radius) + (2 * e.bounds.radius * e.vel.x)) / (this.bounds.radius + e.bounds.radius);
+    myVel.y = (this.vel.y * (this.bounds.radius - e.bounds.radius) + (2 * e.bounds.radius * e.vel.y)) / (this.bounds.radius + e.bounds.radius);
+    theirVel.x = (e.vel.x * (e.bounds.radius - this.bounds.radius) + (2 * this.bounds.radius * this.vel.x)) / (e.bounds.radius + this.bounds.radius);
+    theirVel.y = (e.vel.y * (e.bounds.radius - this.bounds.radius) + (2 * this.bounds.radius * this.vel.y)) / (e.bounds.radius + this.bounds.radius);
+
+    if (myVel.clone().subtract(theirVel.clone()).absoluteLessThan(3)) {
+      e.vel = this.vel;
+      return false;
+    }
+    this.vel = myVel;
+    e.vel = theirVel;
+    this.hasCollided.push(entity);
+    e.hasCollided.push(this);
+    this.entity.pos.add(this.vel);
+    e.entity.pos.add(e.vel);
+    this.bounds.update();
+    e.bounds.update();
+    /*
     e.vel.x += this.vel.x / 2;
     e.vel.y += this.vel.y / 2;
 
     this.vel.x *= -0.5;
     this.vel.y *= -0.5;
+    */
 
     /*
     if (Math.abs(entity.physics.vel.x) + Math.abs(entity.physics.vel.y) > Math.abs(this.vel.x) + Math.abs(this.vel.y)) {
@@ -116,8 +139,8 @@ var Physics = Class.extend({
     }
     */
 
-    //this.eventManager.dispatch('post-collide', this.entity, entity);
-    //entity.physics.eventManager.dispatch('collision', entity.physics, this.entity);
+    this.eventManager.dispatch('post-collide', this.entity, entity);
+    entity.physics.eventManager.dispatch('collision', entity.physics, this.entity);
   },
   addVelocity: function(x, y, r) {
     x = x || 0;
