@@ -9,6 +9,7 @@ var BoundingCircle = require('./boundingcircle');
 var Vector = require('./vector');
 var Angle = require('./angle');
 var Planet = require('./planet');
+var Explosion = require('./explosion');
 
 var Ship = Entity.extend({
 	init: function(game, x, y) {
@@ -24,6 +25,13 @@ var Ship = Entity.extend({
 				return true;
 			}
 		};
+		var _this = this;
+		this.physics.on('post-collide', function(entity) {
+			if (entity instanceof Planet) {
+				this.game.entities.push(new Explosion(this.game, this.pos.x, this.pos.y));
+				this.destroy();
+			}
+		});
 		this.physics.mass = 10;
 		this.physics.maxVelocity = 16;
 		this.layer = 100;

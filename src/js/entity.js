@@ -27,6 +27,9 @@ var Entity = Class.extend({
   },
   destroy: function() {
     this.game.eventManager.dispatch('entity.destroyed', this, this);
+    for (var i = this.game.entities.length - 1; i >= 0; i--) {
+      if (this.game.entities[i] === this) this.game.entities.splice(i, 1);
+    }
   },
 });
 
