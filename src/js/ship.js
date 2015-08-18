@@ -31,10 +31,8 @@ var Ship = Entity.extend({
 		this.trail2 = new Trail(this.game, this, 10, new Vector(-10, -10));
 		this.turnThrust = 0.4;
 		this.mainThrust = 0.20;
-		this.engine = {
-			fuel: 100,
-			useFuel: function() {}
-		};
+		this.fuel = 500;
+		this.power = 100;
 		this.engineParticles = new ParticleSystem(this.game, this.x, this.y, {
 			r: 70,
 			g: 70,
@@ -78,13 +76,16 @@ var Ship = Entity.extend({
 		this.engineParticles.update();
 		//Scale thrust down towards 0 as speed approaches maxvelocity
 		this.mainThrust = 0.2;
-		this.engine.mainOn = false;
+		this.physics.antigravity = false;
 		this.engineParticles.turnOff();
 		if (input.space) {
-			this.physics.antigravity = true;
-		} else this.physics.antigravity = false;
+			if (this.power > 0) {
+				this.physics.antigravity = true;
+				this.power--;
+			}
+		}
 		if (input.up) {
-			if (this.engine.useFuel(2) || true) {
+			if (this.useFuel(2)) {
 				this.engineParticles.turnOn();
 				var x = Math.cos(this.rotation.clone().subtract(90).toRadians()) * this.mainThrust;
 				var y = Math.sin(this.rotation.clone().subtract(90).toRadians()) * this.mainThrust;
@@ -92,11 +93,11 @@ var Ship = Entity.extend({
 			}
 		}
 		if (input.left) { //Left Arrow
-			this.engine.useFuel();
+			this.useFuel(1);
 			this.physics.addAcceleration(0, 0, this.turnThrust * -1);
 		}
 		if (input.right) { //Right Arrow
-			this.engine.useFuel();
+			this.useFuel(1);
 			this.physics.addAcceleration(0, 0, this.turnThrust);
 		}
 		if (input.fire) {
@@ -121,6 +122,13 @@ var Ship = Entity.extend({
 			this.game.entityFactory.create('Explosion', this.game, this.pos.x, this.pos.y);
 			this.destroy();
 		}
+	},
+	useFuel: function(n) {
+		if (n <= this.fuel) {
+			this.fuel -= n;
+			return true;
+		}
+		return false;
 	},
 	getOwner: function() {
 		if (this.owner) return this.owner;

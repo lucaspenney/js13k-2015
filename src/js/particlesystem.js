@@ -11,8 +11,8 @@ var ParticleSystem = Class.extend({
 		this.pid = 0;
 		this.rotationalOffset = 0;
 		this.opts = {
-			amount: 500,
-			rate: 50,
+			amount: 300,
+			rate: 30,
 		};
 		for (var prop in opts) {
 			this.opts[prop] = opts[prop];
