@@ -8,7 +8,7 @@ var Planet = Entity.extend({
         this._super(game, x, y);
         this.radius = (Math.floor(Math.random() * 300)) + 300;
         this.physics = new Physics(game, this, new BoundingCircle(this.game, this, this.radius));
-
+        this.physics.static = true;
         this.physics.collidesWith = function() {
             return true;
         };

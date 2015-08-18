@@ -18,6 +18,7 @@ var Physics = Class.extend({
     this.hasCollided = [];
     this.static = false;
     this.timeScale = 1;
+    this.antigravity = false;
     this.eventManager = new EventManager();
   },
   update: function(entities) {
@@ -42,6 +43,10 @@ var Physics = Class.extend({
           var totalForce = entity.physics.mass / distSquare;
           var xa = totalForce * diffX / dist;
           var ya = totalForce * diffY / dist;
+          if (this.antigravity) {
+            xa *= -1;
+            ya *= -1;
+          }
           this.addAcceleration(xa, ya, 0);
         }
       }
@@ -103,10 +108,6 @@ var Physics = Class.extend({
     theirVel.x = (e.vel.x * (e.bounds.radius - this.bounds.radius) + (2 * this.bounds.radius * this.vel.x)) / (e.bounds.radius + this.bounds.radius);
     theirVel.y = (e.vel.y * (e.bounds.radius - this.bounds.radius) + (2 * this.bounds.radius * this.vel.y)) / (e.bounds.radius + this.bounds.radius);
 
-    if (myVel.clone().subtract(theirVel.clone()).absoluteLessThan(3)) {
-      e.vel = this.vel;
-      return false;
-    }
     this.vel = myVel;
     e.vel = theirVel;
     this.hasCollided.push(entity);

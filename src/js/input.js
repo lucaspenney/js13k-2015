@@ -34,7 +34,7 @@ var InputManager = Class.extend({
 			left: this.keys[37] || this.keys[65], //A or Left
 			right: this.keys[39] || this.keys[68], //D or Right
 			down: this.keys[40] || this.keys[83], //S or Down
-			fire: this.keys[32], //Spacebar
+			space: this.keys[32], //Spacebar
 		}
 	},
 	on: function(key, func) {

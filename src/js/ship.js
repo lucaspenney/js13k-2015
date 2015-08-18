@@ -80,6 +80,9 @@ var Ship = Entity.extend({
 		this.mainThrust = 0.2;
 		this.engine.mainOn = false;
 		this.engineParticles.turnOff();
+		if (input.space) {
+			this.physics.antigravity = true;
+		} else this.physics.antigravity = false;
 		if (input.up) {
 			if (this.engine.useFuel(2) || true) {
 				this.engineParticles.turnOn();
