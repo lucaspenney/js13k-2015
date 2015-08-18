@@ -103,10 +103,10 @@ var Physics = Class.extend({
 
     var myVel = new Vector(0, 0);
     var theirVel = new Vector(0, 0);
-    myVel.x = (this.vel.x * (this.bounds.radius - e.bounds.radius) + (2 * e.bounds.radius * e.vel.x)) / (this.bounds.radius + e.bounds.radius);
-    myVel.y = (this.vel.y * (this.bounds.radius - e.bounds.radius) + (2 * e.bounds.radius * e.vel.y)) / (this.bounds.radius + e.bounds.radius);
-    theirVel.x = (e.vel.x * (e.bounds.radius - this.bounds.radius) + (2 * this.bounds.radius * this.vel.x)) / (e.bounds.radius + this.bounds.radius);
-    theirVel.y = (e.vel.y * (e.bounds.radius - this.bounds.radius) + (2 * this.bounds.radius * this.vel.y)) / (e.bounds.radius + this.bounds.radius);
+    myVel.x = (this.vel.x * (this.mass - e.mass) + (2 * e.mass * e.vel.x)) / (this.mass + e.mass);
+    myVel.y = (this.vel.y * (this.mass - e.mass) + (2 * e.mass * e.vel.y)) / (this.mass + e.mass);
+    theirVel.x = (e.vel.x * (e.mass - this.mass) + (2 * this.mass * this.vel.x)) / (this.mass + e.mass);
+    theirVel.y = (e.vel.y * (e.mass - this.mass) + (2 * this.mass * this.vel.y)) / (this.mass + e.mass);
 
     this.vel = myVel;
     e.vel = theirVel;

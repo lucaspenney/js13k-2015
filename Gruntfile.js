@@ -71,16 +71,20 @@ module.exports = function(grunt) {
 		copy: {
 			development: {
 				files: [{
-					expand: false,
-					src: ['src/img'],
+					expand: true,
+					cwd: 'src/img/',
+					src: ['**'],
 					dest: 'build/img',
+					filter: 'isFile'
 				}]
 			},
 			compressed: {
 				files: [{
-					expand: false,
-					src: ['src/img'],
+					expand: true,
+					cwd: 'src/img/',
+					src: ['**'],
 					dest: 'build/img',
+					filter: 'isFile'
 				}]
 			}
 		},
