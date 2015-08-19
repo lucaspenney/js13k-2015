@@ -105,8 +105,8 @@ var Physics = Class.extend({
     var theirVel = new Vector(0, 0);
     myVel.x = (this.vel.x * (this.mass - e.mass) + (2 * e.mass * e.vel.x)) / (this.mass + e.mass);
     myVel.y = (this.vel.y * (this.mass - e.mass) + (2 * e.mass * e.vel.y)) / (this.mass + e.mass);
-    theirVel.x = (e.vel.x * (e.mass - this.mass) + (2 * this.mass * this.vel.x)) / (this.mass + e.mass);
-    theirVel.y = (e.vel.y * (e.mass - this.mass) + (2 * this.mass * this.vel.y)) / (this.mass + e.mass);
+    theirVel.x = (e.vel.x * (e.mass - this.mass) + (2 * this.mass * this.vel.x)) / (e.mass + this.mass);
+    theirVel.y = (e.vel.y * (e.mass - this.mass) + (2 * this.mass * this.vel.y)) / (e.mass + this.mass);
 
     this.vel = myVel;
     e.vel = theirVel;

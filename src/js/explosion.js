@@ -10,7 +10,7 @@ var Vector = require('./vector');
 var Angle = require('./angle');
 var Planet = require('./planet');
 
-var Ship = Entity.extend({
+var Explosion = Entity.extend({
     init: function(game, x, y) {
         this._super(game, x, y);
         this.game = game;
@@ -21,6 +21,10 @@ var Ship = Entity.extend({
             g: 70,
             b: 70,
             a: 1,
+            vel: function(v) {
+                v.x += (Math.random() * 10) - 5;
+                v.y += (Math.random() * 10) - 5;
+            },
             step: function() {
                 this.a *= 0.8;
                 this.r += 5;
@@ -30,23 +34,21 @@ var Ship = Entity.extend({
         });
         this.particles.setParent(this);
         this.particles.turnOn();
-        this.lifeTime = 0;
+        this.startTime = Date.now();
     },
     update: function(input) {
         this._super();
-        this.lifeTime++;
-        if (this.lifeTime > 150) {
+        if (Date.now() - this.startTime > 250) {
             this.particles.turnOff();
-            if (this.lifeTime > 300) {
+            if (Date.now() - this.startTime > 1000) {
                 this.destroy();
             }
         }
     },
     render: function(ctx, screen, audio) {
-        console.log(2);
         this.particles.update();
         this.particles.render(ctx, screen);
     },
 });
 
-module.exports = Ship;
+module.exports = Explosion;

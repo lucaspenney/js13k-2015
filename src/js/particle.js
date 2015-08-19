@@ -17,8 +17,10 @@ function Particle(game, x, y, args) {
 			this.a *= 0.9;
 		},
 	};
-	for (var prop in args) {
-		this.props[prop] = args[prop];
+	this.parent = args.parent;
+	var opts = args.opts;
+	for (var prop in opts) {
+		this.props[prop] = opts[prop];
 	}
 	this.lifeTime = 0;
 	this.update();
@@ -31,8 +33,10 @@ Particle.prototype.render = function(ctx, screen) {
 
 Particle.prototype.update = function() {
 	this.props.step.call(this.props, this.lifeTime);
-	this.x += this.props.vel.x;
-	this.y += this.props.vel.y;
+	var pos = new Vector(this.x, this.y);
+	this.props.vel(pos);
+	this.x = pos.x;
+	this.y = pos.y;
 	if (this.props.r < 0) this.props.r = 0;
 	if (this.props.g < 0) this.props.g = 0;
 	if (this.props.b < 0) this.props.b = 0;

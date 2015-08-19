@@ -3,6 +3,7 @@ var Player = require('./player');
 var Stars = require('./stars');
 var EventManager = require('./eventmanager');
 var Planet = require('./planet');
+var Item = require('./item');
 
 var Game = Class.extend({
   entityId: 0,
@@ -15,7 +16,10 @@ var Game = Class.extend({
     this.eventManager = new EventManager();
     this.entities.push(new Player(this, -500, -50));
     for (var i = 0; i < 1; i++) {
-      this.entities.push(new Planet(this, i * 700, i * 700));
+      new Planet(this, i * 700, i * 700);
+    }
+    for (var i = 0; i < 100; i++) {
+      new Item(this, (Math.random() * 1000) - 800, (Math.random() * 1000) - 800);
     }
 
   },

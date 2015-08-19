@@ -73,11 +73,10 @@ var ParticleSystem = Class.extend({
 		x = x || this.pos.x;
 		y = y || this.pos.y;
 		if (this.parent) {
-			var vel = this.parent.physics.vel.clone().scale(0.95);
-			vel.x = (Math.random() - 0.5) * 3;
-			vel.y = (Math.random() - 0.5) * 3;
-			this.opts.vel = vel;
-			this.particles.push(new Particle(this.game, x, y, this.opts));
+			this.particles.push(new Particle(this.game, x, y, {
+				opts: this.opts,
+				parent: this.parent
+			}));
 		}
 	},
 	render: function(ctx, screen) {

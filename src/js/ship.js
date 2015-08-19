@@ -10,6 +10,7 @@ var Vector = require('./vector');
 var Angle = require('./angle');
 var Planet = require('./planet');
 var Explosion = require('./explosion');
+var Item = require('./item');
 
 var Ship = Entity.extend({
 	init: function(game, x, y) {
@@ -21,17 +22,25 @@ var Ship = Entity.extend({
 		this.sprite = new Sprite(this, "img/ship1.png");
 		this.physics = new Physics(this.game, this, new BoundingCircle(this.game, this, 20));
 		this.physics.collidesWith = function(e) {
-			if (e instanceof Planet) {
+			if (e instanceof Planet || e instanceof Item) {
 				return true;
 			}
 		};
 		var _this = this;
 		this.physics.on('post-collide', function(entity) {
 			if (entity instanceof Planet) {
-				this.game.entities.push(new Explosion(this.game, this.pos.x, this.pos.y));
+				new Explosion(this.game, this.pos.x, this.pos.y);
 				this.destroy();
 			}
 		});
+		this.physics.on('pre-collide', function(entity) {
+			if (entity instanceof Item) {
+				this.fuel += 30;
+				this.power += 10;
+				entity.destroy();
+				return false;
+			}
+		})
 		this.physics.mass = 10;
 		this.physics.maxVelocity = 16;
 		this.layer = 100;
@@ -46,6 +55,10 @@ var Ship = Entity.extend({
 			g: 70,
 			b: 70,
 			a: 1,
+			vel: function(v) {
+				v.x += (Math.random() * 6) - 3;
+				v.y += (Math.random() * 6) - 3;
+			},
 			step: function() {
 				this.a *= 0.8;
 				this.r += 5;
@@ -57,26 +70,6 @@ var Ship = Entity.extend({
 		this.weapon = new Weapon(this);
 		this.landed = false;
 		this.health = 100;
-		var _this = this;
-		this.physics.on('post-collide', function(entity) {
-			if (entity instanceof Planet) {
-				var x = this.pos.x - entity.pos.x;
-				var y = this.pos.y - entity.pos.y;
-				var angle = (new Angle()).fromRadians(Math.atan2(y, x));
-				var difference = this.rotation.clone().subtractAngle(angle);
-				if (this.physics.vel.absoluteGreaterThan(2) || (difference.degrees < 55 || difference.degrees > 125)) {
-					if (this.owner) this.owner.requestRespawn();
-					this.destroy();
-				} else {
-					this.rotation.set(angle.degrees + 90);
-					this.physics.rv = 0;
-					this.landed = true;
-				}
-			} else if (entity instanceof BlackHole) {
-				this.destroy();
-				this.owner.requestRespawn();
-			}
-		});
 		this.lastFireTime = 0;
 	},
 	update: function(input) {
@@ -87,9 +80,8 @@ var Ship = Entity.extend({
 		this.physics.antigravity = false;
 		this.engineParticles.turnOff();
 		if (input.space) {
-			if (this.power > 0) {
+			if (this.usePower(1)) {
 				this.physics.antigravity = true;
-				this.power--;
 			}
 		}
 		if (input.up) {
@@ -137,6 +129,21 @@ var Ship = Entity.extend({
 			return true;
 		}
 		return false;
+	},
+	usePower: function(n) {
+		if (n <= this.power) {
+			this.power -= n;
+			return true;
+		}
+		return false;
+	},
+	addFuel: function(n) {
+		this.fuel += n;
+		if (this.fuel > 100) this.fuel = 100;
+	},
+	addPower: function(n) {
+		this.power += n;
+		if (this.power > 100) this.power = 100;
 	},
 	getOwner: function() {
 		if (this.owner) return this.owner;
