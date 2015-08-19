@@ -65,7 +65,6 @@ var Ship = Entity.extend({
 			},
 		});
 		this.engineParticles.setParent(this);
-		this.weapon = new Weapon(this);
 		this.landed = false;
 		this.health = 100;
 		this.lastFireTime = 0;
