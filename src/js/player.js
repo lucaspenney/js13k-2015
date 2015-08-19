@@ -3,7 +3,6 @@ var Sprite = require('./sprite');
 var Physics = require('./physics');
 var Trail = require('./trail');
 var ParticleSystem = require('./particlesystem');
-var BoundingBox = require('./boundingbox');
 var BoundingCircle = require('./boundingcircle');
 var Vector = require('./vector');
 var Angle = require('./angle');
@@ -24,6 +23,7 @@ var Player = Entity.extend({
 		}];
 		this.layer = 999;
 		this.ship = new Ship(this.game, x, y);
+		this.target = new Vector(500, 500);
 	},
 	update: function(input) {
 		this._super();
@@ -33,6 +33,9 @@ var Player = Entity.extend({
 	},
 	render: function(ctx, screen) {
 		screen.setFocusedEntity(this.ship);
+		if (this.target) {
+
+		}
 	},
 	getShip: function() {
 		if (this.ship) return this.ship;

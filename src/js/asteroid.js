@@ -1,7 +1,6 @@
 var Entity = require('./entity');
 var Physics = require('./physics');
 var Sprite = require('./sprite');
-var BoundingBox = require('./boundingbox');
 var BoundingCircle = require('./boundingcircle');
 
 var Asteroid = Entity.extend({

@@ -1,5 +1,4 @@
 var Class = require('./class');
-var BoundingBox = require('./boundingbox');
 var Vector = require('./vector');
 var EventManager = require('./eventmanager');
 

@@ -1,14 +1,8 @@
 var Entity = require('./entity');
-var Sprite = require('./sprite');
 var Physics = require('./physics');
-var Trail = require('./trail');
 var ParticleSystem = require('./particlesystem');
-var Weapon = require('./weapon');
-var BoundingBox = require('./boundingbox');
 var BoundingCircle = require('./boundingcircle');
 var Vector = require('./vector');
-var Angle = require('./angle');
-var Planet = require('./planet');
 
 var Explosion = Entity.extend({
     init: function(game, x, y) {
