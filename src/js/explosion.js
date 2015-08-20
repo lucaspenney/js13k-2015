@@ -3,6 +3,7 @@ var Physics = require('./physics');
 var ParticleSystem = require('./particlesystem');
 var BoundingCircle = require('./boundingcircle');
 var Vector = require('./vector');
+var Angle = require('./angle');
 
 var Explosion = Entity.extend({
     init: function(game, x, y) {
